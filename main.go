@@ -41,9 +41,9 @@ func main() {
 			if corp.CorporateID == user.CorporateID {
 				corporates[j].CorporateID = corporateId
 				users[i].CorporateID = corporateId
+				users[i].MapToSchema(userSchema)
 			}
 
-			users[i].MapToSchema(userSchema)
 		}
 
 		corporates[j].MapToSchema(corporateSchema)
