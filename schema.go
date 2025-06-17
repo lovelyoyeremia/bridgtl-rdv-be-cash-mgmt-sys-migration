@@ -82,6 +82,30 @@ type Corporate struct {
 	ApprovalSignerCount  int     `csv:"approval_signer_count"`
 }
 
+type Authorization struct {
+	AuthID      string `csv:"auth_id"`
+	Type        string `csv:"type"`
+	TranType    string `csv:"tran_type"`
+	CorporateID string `csv:"corporate_id"`
+	MakerID     string `csv:"maker_id"`
+	CheckerID   string `csv:"checker_id"`
+	SignerID    string `csv:"signer_id"`
+	MakerIP     string `csv:"maker_ip"`
+	CheckerIP   string `csv:"checker_ip"`
+	SignerIP    string `csv:"signer_ip"`
+	TranDate    string `csv:"tran_date"`
+	CheckDate   string `csv:"check_date"`
+	SignDate    string `csv:"sign_date"`
+	RejectID    string `csv:"reject_id"`
+	RejectIP    string `csv:"reject_ip"`
+	RejectDate  string `csv:"reject_date"`
+	OldData     string `csv:"olddata"`
+	Data        string `csv:"data"`
+	Status      string `csv:"status"`
+	Description string `csv:"description"`
+	AuthMode    string `csv:"auth_mode"`
+}
+
 type AuthorizationUser struct {
 	AuthID   string `csv:"auth_id"`
 	UserID   string `csv:"user_id"`
