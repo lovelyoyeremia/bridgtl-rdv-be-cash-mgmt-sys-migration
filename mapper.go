@@ -32,25 +32,46 @@ func (u *User) MapToSchema(r *repository.User) {
 	r.Status = UserStatusToPgtypeUserStatus(repository.UserStatus(u.Status))
 }
 
-func (c *Corporate) MapToSchema(r *repository.InsertCorporateParams) {
-	r.ID = uuid.MustParse(c.CorporateID)
-	r.AbonemenCode = StringToPgtypeText(c.Abonemen)
-	r.Address = StringToPgtypeText(c.Alamat)
-	r.AddressCity = StringToPgtypeText(c.Kota)
-	r.AddressPostalCode = StringToPgtypeText(c.Kodepos)
-	r.AddressProvince = StringToPgtypeText(c.Propinsi)
-	r.AddressSubDistrict = StringToPgtypeText(c.Kecamatan)
-	r.AddressVillage = c.Kelurahan
-	r.AmendmentDeedDate = StringToPgtypeDate(c.TanggalAktaPendirian)
-	r.AmendmentDeedNumber = StringToPgtypeText(c.AktaPendirian)
-
-	r.ApprovalSignerCount = int16(c.ApprovalSignerCount)
-	r.ApprovalCheckerCount = int16(c.ApprovalCheckerCount)
-	r.ApprovalType = StringToPgtypeText(c.ApprovalMode)
-	r.BookingOfficeCode = StringToPgtypeText(c.BookingOffice)
-
-	r.BusinessEntityType = StringToPgtypeText(c.JenisPerusahaan)
-	r.Cif = StringToPgtypeText(c.CIFPerusahaan)
-	r.BusinessGroupType = StringToPgtypeText(c.BidangUsaha)
-	r.CustomerNumber = StringToPgtypeText(c.NPWP)
+func (c *Corporate) MapToSchema() *repository.InsertCorporateParams {
+	return &repository.InsertCorporateParams{
+		ID:                      uuid.MustParse(c.CorporateID),
+		AbonemenCode:            StringToPgtypeText(c.Abonemen),
+		Address:                 StringToPgtypeText(c.Alamat),
+		AddressCity:             StringToPgtypeText(c.Kota),
+		AddressPostalCode:       StringToPgtypeText(c.Kodepos),
+		AddressProvince:         StringToPgtypeText(c.Propinsi),
+		AddressSubDistrict:      StringToPgtypeText(c.Kecamatan),
+		AddressVillage:          c.Kelurahan,
+		AmendmentDeedDate:       StringToPgtypeDate(c.TanggalAktaPerubahan),
+		AmendmentDeedNumber:     StringToPgtypeText(c.AktaPerubahan),
+		ApprovalSignerCount:     int16(c.ApprovalSignerCount),
+		ApprovalCheckerCount:    int16(c.ApprovalCheckerCount),
+		ApprovalType:            StringToPgtypeText(c.ApprovalMode),
+		BookingOfficeCode:       StringToPgtypeText(c.BookingOffice),
+		BusinessEntityType:      StringToPgtypeText(c.JenisPerusahaan),
+		Cif:                     StringToPgtypeText(c.CIFPerusahaan),
+		BusinessGroupType:       StringToPgtypeText(c.BidangUsaha),
+		Npwp:                    StringToPgtypeText(c.NPWP),
+		Code:                    c.CorporateCode,
+		Name:                    c.CorporateName,
+		Role:                    "CLIENT",
+		BusinessSector:          StringToPgtypeText(c.BidangUsaha),
+		LegalStatus:             StringToPgtypeText(c.JenisPerusahaan),
+		EstablishmentPlace:      StringToPgtypeText(c.TempatPendirian),
+		LicenseType:             StringToPgtypeText(c.Legalitas),
+		LicenseNumber:           StringToPgtypeText(c.NoLegalitas),
+		LicenseIssueDate:        StringToPgtypeDate(c.TanggalTerbit),
+		LicenseExpiryDate:       StringToPgtypeDate(c.TanggalKadaluarsa),
+		EstablishmentDeedNumber: StringToPgtypeText(c.AktaPendirian),
+		EstablishmentDeedDate:   StringToPgtypeDate(c.TanggalAktaPendirian),
+		PhoneNumber:             StringToPgtypeText(c.Telepon),
+		Fax:                     StringToPgtypeText(c.Facsimile),
+		Email:                   StringToPgtypeText(c.Email),
+		DailyLimit:              IntToPgtypeNumeric(int(c.LimitTotal.float64)),
+		TransactionLimit:        IntToPgtypeNumeric(int(c.LimitRupiah.float64)),
+		InitiatorPersonalNumber: StringToPgtypeText(c.AktaPendirian),
+		InitiatorName:           StringToPgtypeText(c.AktaPendirian),
+		InitiatorWorkUnit:       StringToPgtypeText(c.AktaPendirian),
+		Status:                  StringToPgtypeText("ACTIVE"),
+	}
 }

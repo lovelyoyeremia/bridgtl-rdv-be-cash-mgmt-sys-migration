@@ -85,9 +85,8 @@ func main() {
 	for i := range corporates {
 		if newID, ok := corporateIDMap[corporates[i].CorporateID]; ok {
 			log.Printf("[FIND-CORPORATE] find corporate id = %s", corporates[i].CorporateID)
-			corporateParams := new(repository.InsertCorporateParams)
 			corporates[i].CorporateID = newID
-			corporates[i].MapToSchema(corporateParams)
+			corporateParams := corporates[i].MapToSchema()
 			corporateDb = append(corporateDb, corporateParams)
 		}
 	}
