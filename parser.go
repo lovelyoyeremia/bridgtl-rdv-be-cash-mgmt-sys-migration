@@ -1,8 +1,6 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"os"
 	"strconv"
 	"strings"
@@ -38,9 +36,20 @@ func parseFloat(input string) (float64, error) {
 	return strconv.ParseFloat(cleaned, 64)
 }
 
-func parseMd5Password(userID, password string) string {
-	hashInput := userID + password
-	hash := md5.New()
-	hash.Write([]byte(hashInput))
-	return hex.EncodeToString(hash.Sum(nil))
+func checkRole(userCode string) string {
+	lowerCode := strings.ToLower(userCode)
+
+	switch strings.ToLower(lowerCode) {
+	case "admin":
+		return "ADMIN"
+	case "sysadmin":
+		return "SYSADMIN"
+	case "maker":
+		return "MAKER"
+	case "checker":
+		return "CHECKER"
+	case "signer":
+		return "SIGNER"
+	}
+	return ""
 }
