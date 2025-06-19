@@ -166,6 +166,10 @@ func main() {
 	successAuthorizationAccessCount, failedAuthorizationAccessCount := insertAuthorizationAccess(ctx, authorizationAccessDb, store)
 	successAccountCount, failedAccountCount := insertAccount(ctx, accountDb, store)
 
+	if err := store.UpdateCorporateAdminFee(ctx); err != nil {
+		log.Fatal(err)
+	}
+
 	log.Printf("[MIGRATION] TOTAL FAILED CORPORATE = %d, TOTAL SUCCESS CORPORATE = %d", failedCorpCount, successCorpCount)
 	log.Printf("[MIGRATION] TOTAL FAILED USER = %d, TOTAL SUCCESS USER = %d", failedUserCount, successUserCount)
 	log.Printf("[MIGRATION] TOTAL FAILED AUTHORIZATION = %d, TOTAL SUCCESS AUTHORIZATION = %d", failedAuthorizationCount, successAuthorizationCount)
