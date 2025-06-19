@@ -48,10 +48,25 @@ func main() {
 		panic(err)
 	}
 
+	account := make([]*Account, 0)
+	accountFilePath := "templates/account.csv"
+
+	if err := parseCsv(&account, accountFilePath); err != nil {
+		panic(err)
+	}
+
+	deposito := make([]*Deposito, 0)
+	depositoFilePath := "templates/deposito.csv"
+
+	if err := parseCsv(&deposito, depositoFilePath); err != nil {
+		panic(err)
+	}
+
 	corporateDb := make([]*repository.InsertCorporateParams, 0)
 	userDb := make([]*repository.InsertUserParams, 0)
 	authorizationDb := make([]*repository.InsertUserAuthorizationParams, 0)
 	authorizationAccessDb := make([]*repository.InsertUserAuthorizationAccessParams, 0)
+	accountDb := make([]*repository.InsertAccountParams, 0)
 
 	userIDMap := make(map[string]string)
 	corporateIDMap := make(map[string]string)
@@ -115,14 +130,46 @@ func main() {
 		}
 	}
 
+	for i := range account {
+		if corpID, ok := corporateIDMap[account[i].CorporateID]; ok {
+			accountDbSchema := new(repository.InsertAccountParams)
+			accountDbSchema.AccountName = account[i].AccountName
+			accountDbSchema.AccountNumber = account[i].AccountNumber
+			accountDbSchema.Accessibility = StringToPgtypeText(account[i].Accessibility)
+			accountDbSchema.Ownership = StringToPgtypeText(account[i].Ownership)
+			accountDbSchema.CorporateID = StringToPgtypeUuid(corpID)
+			accountDbSchema.Currency = StringToPgtypeText(account[i].Currency)
+			accountDbSchema.IsActive = BoolToPgtypeBool(true)
+			accountDbSchema.AccountType = "GIRO"
+			accountDb = append(accountDb, accountDbSchema)
+		}
+	}
+
+	for i := range deposito {
+		if corpID, ok := corporateIDMap[deposito[i].CorporateID]; ok {
+			accountDbSchema := new(repository.InsertAccountParams)
+			accountDbSchema.AccountName = deposito[i].AccountName
+			accountDbSchema.AccountNumber = deposito[i].AccountNumber
+			accountDbSchema.Break = StringToPgtypeText(deposito[i].Break)
+			accountDbSchema.Maturity = StringToPgtypeText(deposito[i].Maturity)
+			accountDbSchema.CorporateID = StringToPgtypeUuid(corpID)
+			accountDbSchema.Currency = StringToPgtypeText(deposito[i].Currency)
+			accountDbSchema.IsActive = BoolToPgtypeBool(true)
+			accountDbSchema.AccountType = "TABUNGAN"
+			accountDb = append(accountDb, accountDbSchema)
+		}
+	}
+
 	successCorpCount, failedCorpCount := insertCorporate(ctx, corporateDb, store)
 	successUserCount, failedUserCount := insertUser(ctx, userDb, store)
 	successAuthorizationCount, failedAuthorizationCount := insertAuthorization(ctx, authorizationDb, store)
 	successAuthorizationAccessCount, failedAuthorizationAccessCount := insertAuthorizationAccess(ctx, authorizationAccessDb, store)
+	successAccountCount, failedAccountCount := insertAccount(ctx, accountDb, store)
 
 	log.Printf("[MIGRATION] TOTAL FAILED CORPORATE = %d, TOTAL SUCCESS CORPORATE = %d", failedCorpCount, successCorpCount)
 	log.Printf("[MIGRATION] TOTAL FAILED USER = %d, TOTAL SUCCESS USER = %d", failedUserCount, successUserCount)
 	log.Printf("[MIGRATION] TOTAL FAILED AUTHORIZATION = %d, TOTAL SUCCESS AUTHORIZATION = %d", failedAuthorizationCount, successAuthorizationCount)
+	log.Printf("[MIGRATION] TOTAL FAILED ACCOUNT = %d, TOTAL SUCCESS ACCOUNT = %d", failedAccountCount, successAccountCount)
 	log.Printf("[MIGRATION] TOTAL FAILED AUTHORIZATION ACCESS = %d, TOTAL SUCCESS AUTHORIZATION ACCESS = %d", failedAuthorizationAccessCount, successAuthorizationAccessCount)
 }
 
@@ -167,6 +214,28 @@ func insertAuthorizationAccess(ctx context.Context, authorizationDb []*repositor
 	}
 
 	wgAuth.Wait()
+	return
+}
+
+func insertAccount(ctx context.Context, accountDb []*repository.InsertAccountParams, store *repository.Store) (successCount, failedCount int64) {
+	var wgAcc sync.WaitGroup
+	for _, acc := range accountDb {
+		log.Printf("[MIGRATION-ACCOUNT] PROCESSING INSERT ACCOUNT, NAME=%s", acc.AccountName)
+		wgAcc.Add(1)
+
+		go func(c *repository.InsertAccountParams) {
+			defer wgAcc.Done()
+
+			if err := store.InsertAccount(ctx, *c); err != nil {
+				atomic.AddInt64(&failedCount, 1)
+				log.Printf("[ERROR] failed execute account insertion, err=%v", err)
+			} else {
+				atomic.AddInt64(&successCount, 1)
+			}
+		}(acc)
+	}
+
+	wgAcc.Wait()
 	return
 }
 
