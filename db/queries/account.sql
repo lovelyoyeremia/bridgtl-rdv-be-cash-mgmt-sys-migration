@@ -1,4 +1,4 @@
--- name: BulkInsertAccount :exec
+-- name: InsertAccount :exec
 INSERT INTO
     account (
         corporate_id,
@@ -13,18 +13,19 @@ INSERT INTO
         is_active,
         user_authorization_id
     )
-SELECT
-    unnest(@corporate_id :: uuid []),
-    unnest(@account_number :: text []),
-    unnest(@account_name :: text []),
-    unnest(@account_type :: text []),
-    unnest(@ownership :: text []),
-    unnest(@accessibility :: text []),
-    unnest(@currency :: text []),
-    unnest(@maturity :: text []),
-    unnest(@break :: text []),
-    unnest(@is_active :: boolean []),
-    unnest(@user_authorization_id :: uuid []);
+VALUES (
+    @corporate_id,
+    @account_number,
+    @account_name,
+    @account_type,
+    @ownership,
+    @accessibility,
+    @currency,
+    @maturity,
+    @break,
+    @is_active,
+    @user_authorization_id
+);
 
 -- name: CountAccountByCorporateId :one
 select

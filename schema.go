@@ -114,3 +114,21 @@ type AuthorizationUser struct {
 	AuthIP   string `csv:"auth_ip"`
 	Type     string `csv:"type"`
 }
+
+type Account struct {
+	CorporateID   string `csv:"corporate_id"`
+	AccountNumber string `csv:"account"`
+	AccountName   string `csv:"account_name"`
+	Ownership     string `csv:"ownership"`
+	Accessibility string `csv:"accessibility"`
+	Currency      string `csv:"currency"`
+}
+
+type Deposito struct {
+	CorporateID   string `csv:"corporate_id"`
+	AccountNumber string `csv:"account"`
+	AccountName   string `csv:"account_name"`
+	Maturity      string `csv:"maturity"`
+	Break         string `csv:"break"`
+	Currency      string `csv:"currency"`
+}
