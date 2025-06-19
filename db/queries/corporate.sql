@@ -53,3 +53,14 @@ VALUES (
     $41, now(), now(), $42
 ) RETURNING *;
 
+-- name: UpdateCorporateAdminFee :exec
+UPDATE corporate
+SET admin_fee_debit_account_id = sub.selected_account_id
+FROM (
+    SELECT DISTINCT ON (corporate_id)
+           corporate_id,
+           id AS selected_account_id
+    FROM account
+    ORDER BY corporate_id, RANDOM()
+) sub
+WHERE corporate.id = sub.corporate_id;
